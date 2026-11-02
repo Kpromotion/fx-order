@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三眼AI 注文アシスト</title>
+<style>
+  :root {
+    --bg-color: #121826;
+    --panel-bg: #1f2937;
+    --input-bg: #374151;
+    --text-main: #f3f4f6;
+    --text-muted: #9ca3af;
+    --accent-green: #10b981;
+    --accent-blue: #3b82f6;
+    --accent-red: #ef4444;
+    --accent-purple: #6366f1;
+    --border-color: #4b5563;
+  }
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+  .panel {
+    background-color: var(--panel-bg);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* 通知ペーストエリア */
+  textarea {
+    width: 100%;
+    background-color: var(--input-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    min-height: 100px;
+    margin-bottom: 12px;
+    resize: vertical;
+  }
+  .btn-extract {
+    width: 100%;
+    background-color: var(--accent-purple);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .btn-extract:active { opacity: 0.8; }
+  
+  /* 入力エリア */
+  .input-group { margin-bottom: 12px; }
+  .input-group label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .input-group input {
+    width: 100%;
+    background-color: var(--input-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-sizing: border-box;
+  }
+  .input-group input.green-text { color: var(--accent-green); }
+  .input-group input.blue-text { color: var(--accent-blue); }
+  .input-group input.red-text { color: var(--accent-red); }
+
+  /* 出力エリア */
+  .output-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--input-bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+  .output-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .output-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+  .output-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+  }
+  .val-green { color: var(--accent-green); }
+  .val-blue { color: var(--accent-blue); }
+  .val-red { color: var(--accent-red); }
+
+  /* コピーボタン */
+  .btn-copy {
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.95rem;
+    min-width: 90px;
+  }
+  .btn-copy.green { background-color: var(--accent-green); }
+  .btn-copy.blue { background-color: var(--accent-blue); }
+  .btn-copy.red { background-color: var(--accent-red); }
+  .btn-copy:active { opacity: 0.8; }
+  
+  hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 20px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>注文アシスト（自動抽出版）</h1>
+
+  <!-- 1. 通知ペーストエリア -->
+  <div class="section-title">1. 通知テキストを貼り付け</div>
+  <div class="panel">
+    <textarea id="notifyText" placeholder="ここに三眼AIの通知をペーストしてください。&#10;例：&#10;USDJPY M5 | AI SIGNAL：売りシグナル @ 157.626..."></textarea>
+    <button class="btn-extract" onclick="extractData()">数値を自動入力する</button>
+  </div>
+
+  <!-- 2. 入力（確認）エリア -->
+  <div class="section-title">2. 入力エリア (三眼AIの数値)</div>
+  <div class="panel">
+    <div class="input-group">
+      <label>合計ロット数（※自動保存されます）</label>
+      <input type="number" id="totalLot" class="green-text" step="0.1" value="6.3" oninput="calculate()">
+    </div>
+    <div class="input-group">
+      <label>建玉レート</label>
+      <input type="number" id="entryRate" step="0.001" oninput="calculate()">
+    </div>
+    <div class="input-group">
+      <label>利確目標1</label>
+      <input type="number" id="tp1" class="blue-text" step="0.001" oninput="calculate()">
+    </div>
+    <div class="input-group">
+      <label>利確目標2</label>
+      <input type="number" id="tp2" class="blue-text" step="0.001" oninput="calculate()">
+    </div>
+    <div class="input-group">
+      <label>損切りライン</label>
+      <input type="number" id="sl" class="red-text" step="0.001" oninput="calculate()">
+    </div>
+  </div>
+
+  <!-- 3. 発注用データ出力エリア -->
+  <div class="section-title">3. 発注用データ (コピーして使用)</div>
+  
+  <!-- 1回目 OCO -->
+  <div class="panel">
+    <div class="section-title" style="color: #fff; font-size: 1rem; margin-bottom: 12px;">1回目 OCO注文 (7割)</div>
+    
+    <div class="output-row">
+      <div class="output-info">
+        <span class="output-label">ロット数 (7割)</span>
+        <span class="output-value val-green" id="outLot1">--</span>
+      </div>
+      <button class="btn-copy green" onclick="copyVal('outLot1', this)">📋 コピー</button>
+    </div>
+
+    <div class="output-row">
+      <div class="output-info">
+        <span class="output-label">指値 (利確1)</span>
+        <span class="output-value val-blue" id="outTp1">--</span>
+      </div>
+      <button class="btn-copy blue" onclick="copyVal('outTp1', this)">📋 コピー</button>
+    </div>
+
+    <div class="output-row">
+      <div class="output-info">
+        <span class="output-label">逆指値 (損切)</span>
+        <span class="output-value val-red" id="outSl1">--</span>
+      </div>
+      <button class="btn-copy red" onclick="copyVal('outSl1', this)">📋 コピー</button>
+    </div>
+  </div>
+
+  <!-- 2回目 OCO -->
+  <div class="panel">
+    <div class="section-title" style="color: #fff; font-size: 1rem; margin-bottom: 12px;">2回目 OCO注文 (残り3割)</div>
+    
+    <div class="output-row">
+      <div class="output-info">
+        <span class="output-label">ロット数 (3割)</span>
+        <span class="output-value val-green" id="outLot2">--</span>
+      </div>
+      <button class="btn-copy green" onclick="copyVal('outLot2', this)">📋 コピー</button>
+    </div>
+
+    <div class="output-row">
+      <div class="output-info">
+        <span class="output-label">指値 (利確2)</span>
+        <span class="output-value val-blue" id="outTp2">--</span>
+      </div>
+      <button class="btn-copy blue" onclick="copyVal('outTp2', this)">📋 コピー</button>
+    </div>
+
+    <div class="output-row">
+      <div class="output-info">
+        <span class="output-label">逆指値 (損切)</span>
+        <span class="output-value val-red" id="outSl2">--</span>
+      </div>
+      <button class="btn-copy red" onclick="copyVal('outSl2', this)">📋 コピー</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // 画面ロード時に前回のロット数を復元
+  window.onload = function() {
+    const savedLot = localStorage.getItem('savedTotalLot');
+    if (savedLot) {
+      document.getElementById('totalLot').value = savedLot;
+    }
+  }
+
+  // 通知テキストから抽出するメイン関数
+  function extractData() {
+    const text = document.getElementById('notifyText').value;
+    
+    // 正規表現で数値を抽出
+    const entryMatch = text.match(/@\s*([\d.]+)/);
+    const tp1Match = text.match(/利確目標[１1][:：]\s*([\d.]+)/);
+    const tp2Match = text.match(/利確目標[２2][:：]\s*([\d.]+)/);
+    const slMatch = text.match(/損切り[\s ]*[:：]\s*([\d.]+)/);
+
+    let extracted = false;
+
+    if (entryMatch) { document.getElementById('entryRate').value = entryMatch[1]; extracted = true; }
+    if (tp1Match) { document.getElementById('tp1').value = tp1Match[1]; extracted = true; }
+    if (tp2Match) { document.getElementById('tp2').value = tp2Match[1]; extracted = true; }
+    if (slMatch) { document.getElementById('sl').value = slMatch[1]; extracted = true; }
+
+    if (extracted) {
+      calculate();
+      // 抽出完了を視覚的に知らせる（ボタンのテキストを一時的に変更）
+      const btn = document.querySelector('.btn-extract');
+      btn.innerText = "✔ 抽出・計算完了！";
+      btn.style.backgroundColor = "#10b981"; // 緑色に
+      setTimeout(() => {
+        btn.innerText = "数値を自動入力する";
+        btn.style.backgroundColor = "#6366f1"; // 元の紫色に戻す
+      }, 2000);
+    } else {
+      alert("数値を抽出できませんでした。テキストの形式を確認してください。");
+    }
+  }
+
+  // 7割・3割の計算と出力への反映
+  function calculate() {
+    const totalLot = parseFloat(document.getElementById('totalLot').value) || 0;
+    const tp1 = document.getElementById('tp1').value;
+    const tp2 = document.getElementById('tp2').value;
+    const sl = document.getElementById('sl').value;
+
+    // ロット数をローカルストレージに保存
+    localStorage.setItem('savedTotalLot', totalLot);
+
+    // 7割・3割の計算（小数第1位で正確に丸める）
+    let lot1 = Math.round(totalLot * 0.7 * 10) / 10;
+    let lot2 = Math.round((totalLot - lot1) * 10) / 10;
+
+    // 出力エリアへ反映
+    document.getElementById('outLot1').innerText = (totalLot > 0) ? lot1 : '--';
+    document.getElementById('outTp1').innerText = tp1 || '--';
+    document.getElementById('outSl1').innerText = sl || '--';
+
+    document.getElementById('outLot2').innerText = (totalLot > 0) ? lot2 : '--';
+    document.getElementById('outTp2').innerText = tp2 || '--';
+    document.getElementById('outSl2').innerText = sl || '--';
+  }
+
+  // クリップボードへのコピー関数
+  function copyVal(elementId, btnElement) {
+    const val = document.getElementById(elementId).innerText;
+    if (val === '--' || !val) return;
+
+    navigator.clipboard.writeText(val).then(() => {
+      const originalText = btnElement.innerText;
+      btnElement.innerText = "✔ コピー済";
+      // 1.5秒後に元のテキストに戻す
+      setTimeout(() => {
+        btnElement.innerText = originalText;
+      }, 1500);
+    }).catch(err => {
+      alert('コピーに失敗しました。');
+    });
+  }
+</script>
+</body>
+</html>
