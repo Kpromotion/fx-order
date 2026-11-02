@@ -29,11 +29,29 @@
     max-width: 500px;
     margin: 0 auto;
   }
-  h1 {
-    font-size: 1.2rem;
-    text-align: center;
+  
+  /* ヘッダー周り（クリアボタン追加） */
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
   }
+  h1 {
+    font-size: 1.2rem;
+    margin: 0;
+  }
+  .btn-clear {
+    background: none;
+    border: none;
+    color: var(--accent-blue);
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 8px;
+  }
+  .btn-clear:active { opacity: 0.7; }
+
   .section-title {
     font-size: 0.85rem;
     color: var(--text-muted);
@@ -141,22 +159,20 @@
   .btn-copy.red { background-color: var(--accent-red); }
   .btn-copy:active { opacity: 0.8; }
   
-  hr {
-    border: none;
-    border-top: 1px solid var(--border-color);
-    margin: 20px 0;
-  }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>注文アシスト（自動抽出版）</h1>
+  <div class="header-container">
+    <h1>注文アシスト</h1>
+    <button class="btn-clear" onclick="clearData()">🗑️ クリア</button>
+  </div>
 
   <!-- 1. 通知ペーストエリア -->
   <div class="section-title">1. 通知テキストを貼り付け</div>
   <div class="panel">
-    <textarea id="notifyText" placeholder="ここに三眼AIの通知をペーストしてください。&#10;例：&#10;USDJPY M5 | AI SIGNAL：売りシグナル @ 157.626..."></textarea>
+    <textarea id="notifyText" placeholder="ここに三眼AIの通知をペーストしてください。"></textarea>
     <button class="btn-extract" onclick="extractData()">数値を自動入力する</button>
   </div>
 
@@ -257,11 +273,26 @@
     }
   }
 
+  // データをクリアする関数（ロット数以外をリセット）
+  function clearData() {
+    document.getElementById('notifyText').value = '';
+    document.getElementById('entryRate').value = '';
+    document.getElementById('tp1').value = '';
+    document.getElementById('tp2').value = '';
+    document.getElementById('sl').value = '';
+
+    document.getElementById('outLot1').innerText = '--';
+    document.getElementById('outTp1').innerText = '--';
+    document.getElementById('outSl1').innerText = '--';
+    document.getElementById('outLot2').innerText = '--';
+    document.getElementById('outTp2').innerText = '--';
+    document.getElementById('outSl2').innerText = '--';
+  }
+
   // 通知テキストから抽出するメイン関数
   function extractData() {
     const text = document.getElementById('notifyText').value;
     
-    // 正規表現で数値を抽出
     const entryMatch = text.match(/@\s*([\d.]+)/);
     const tp1Match = text.match(/利確目標[１1][:：]\s*([\d.]+)/);
     const tp2Match = text.match(/利確目標[２2][:：]\s*([\d.]+)/);
@@ -276,13 +307,12 @@
 
     if (extracted) {
       calculate();
-      // 抽出完了を視覚的に知らせる（ボタンのテキストを一時的に変更）
       const btn = document.querySelector('.btn-extract');
       btn.innerText = "✔ 抽出・計算完了！";
-      btn.style.backgroundColor = "#10b981"; // 緑色に
+      btn.style.backgroundColor = "#10b981"; 
       setTimeout(() => {
         btn.innerText = "数値を自動入力する";
-        btn.style.backgroundColor = "#6366f1"; // 元の紫色に戻す
+        btn.style.backgroundColor = "#6366f1"; 
       }, 2000);
     } else {
       alert("数値を抽出できませんでした。テキストの形式を確認してください。");
@@ -296,19 +326,16 @@
     const tp2 = document.getElementById('tp2').value;
     const sl = document.getElementById('sl').value;
 
-    // ロット数をローカルストレージに保存
     localStorage.setItem('savedTotalLot', totalLot);
 
-    // 7割・3割の計算（小数第1位で正確に丸める）
     let lot1 = Math.round(totalLot * 0.7 * 10) / 10;
     let lot2 = Math.round((totalLot - lot1) * 10) / 10;
 
-    // 出力エリアへ反映
-    document.getElementById('outLot1').innerText = (totalLot > 0) ? lot1 : '--';
+    document.getElementById('outLot1').innerText = (totalLot > 0 && tp1) ? lot1 : '--';
     document.getElementById('outTp1').innerText = tp1 || '--';
     document.getElementById('outSl1').innerText = sl || '--';
 
-    document.getElementById('outLot2').innerText = (totalLot > 0) ? lot2 : '--';
+    document.getElementById('outLot2').innerText = (totalLot > 0 && tp2) ? lot2 : '--';
     document.getElementById('outTp2').innerText = tp2 || '--';
     document.getElementById('outSl2').innerText = sl || '--';
   }
@@ -321,7 +348,6 @@
     navigator.clipboard.writeText(val).then(() => {
       const originalText = btnElement.innerText;
       btnElement.innerText = "✔ コピー済";
-      // 1.5秒後に元のテキストに戻す
       setTimeout(() => {
         btnElement.innerText = originalText;
       }, 1500);
