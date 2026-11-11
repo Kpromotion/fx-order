@@ -1,80 +1,72 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ロット分割 計算ツール (6-3-1)</title>
-  <style>
-    :root {
-      --bg-color: #121826;
-      --panel-bg: #1f2937;
-      --input-bg: #374151;
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --accent-green: #10b981;
-      --border-color: #4b5563;
-    }
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 20px;
-      border-top: 5px solid var(--accent-green);
-    }
-    .container { max-width: 400px; margin: 0 auto; }
-    h1 { font-size: 1.2rem; text-align: center; margin-bottom: 20px; color: var(--text-main); }
-    .panel {
-      background-color: var(--panel-bg);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    }
-    .input-group { margin-bottom: 25px; }
-    .input-group label { display: block; font-size: 0.95rem; color: var(--text-muted); margin-bottom: 8px; text-align: center; font-weight: bold;}
-    .input-group input {
-      width: 100%;
-      background-color: var(--input-bg);
-      color: var(--accent-green);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 15px;
-      font-size: 1.8rem;
-      font-weight: bold;
-      box-sizing: border-box;
-      text-align: center;
-    }
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: var(--input-bg);
-      border-radius: 8px;
-      padding: 15px 16px;
-      margin-bottom: 15px;
-    }
-    .result-label { font-size: 0.95rem; color: var(--text-muted); }
-    .result-value { font-size: 1.6rem; font-weight: bold; color: var(--text-main); margin-top: 4px;}
-    .btn-copy {
-      background-color: #4b5563;
-      border: none;
-      color: white;
-      padding: 12px 18px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1rem;
-    }
-    .btn-copy:active { opacity: 0.8; }
-  </style>
-</head>
-<body>
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ロット分割 計算ツール (6-3-1)</title><style>
+  :root {
+    --bg-color: #121826;
+    --panel-bg: #1f2937;
+    --input-bg: #374151;
+    --text-main: #f3f4f6;
+    --text-muted: #9ca3af;
+    --accent-green: #10b981;
+    --border-color: #4b5563;
+  }
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 20px;
+    border-top: 5px solid var(--accent-green);
+  }
+  .container { max-width: 400px; margin: 0 auto; }
+  h1 { font-size: 1.2rem; text-align: center; margin-bottom: 20px; color: var(--text-main); }
+  .panel {
+    background-color: var(--panel-bg);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+  .input-group { margin-bottom: 25px; }
+  .input-group label { display: block; font-size: 0.95rem; color: var(--text-muted); margin-bottom: 8px; text-align: center; font-weight: bold;}
+  .input-group input {
+    width: 100%;
+    background-color: var(--input-bg);
+    color: var(--accent-green);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--input-bg);
+    border-radius: 8px;
+    padding: 15px 16px;
+    margin-bottom: 15px;
+  }
+  .result-label { font-size: 0.95rem; color: var(--text-muted); }
+  .result-value { font-size: 1.6rem; font-weight: bold; color: var(--text-main); margin-top: 4px;}
+  .btn-copy {
+    background-color: #4b5563;
+    border: none;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+  .btn-copy:active { opacity: 0.8; }
+</style></head><body>
 <div class="container">
   <h1>ロット分割 計算ツール (6:3:1)</h1>
   <div class="panel">
     <div class="input-group">
       <label>合計数量を入力 (例: 0.63 または 6.3)</label>
-      <input type="number" id="totalLot" step="0.001" oninput="calculateSplit()" placeholder="0.00">
+      <input type="number" id="totalLot" step="0.01" oninput="calculateSplit()" placeholder="0.00">
     </div>
     
     <div class="result-row">
@@ -107,10 +99,10 @@
   function calculateSplit() {
     const total = parseFloat(document.getElementById('totalLot').value) || 0;
     
-    // 小数第3位まで正確に計算
-    let lot60 = Math.round(total * 0.6 * 1000) / 1000;
-    let lot30 = Math.round(total * 0.3 * 1000) / 1000;
-    let lot10 = Math.round((total - lot60 - lot30) * 1000) / 1000;
+    // 小数第2位まで正確に計算
+    let lot60 = Math.round(total * 0.6 * 100) / 100;
+    let lot30 = Math.round(total * 0.3 * 100) / 100;
+    let lot10 = Math.round((total - lot60 - lot30) * 100) / 100;
     
     document.getElementById('out60').innerText = total > 0 ? lot60 : '--';
     document.getElementById('out30').innerText = total > 0 ? lot30 : '--';
@@ -130,6 +122,4 @@
       }, 1500);
     });
   }
-</script>
-</body>
-</html>
+</script></body></html>
