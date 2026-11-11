@@ -121,15 +121,12 @@
     let lot2 = Math.round(totalLot * 0.3 * 100) / 100;
     let lot3 = Math.round((totalLot - lot1 - lot2) * 100) / 100;
 
-    document.getElementById('outLot1').innerText = (totalLot > 0 && tp1) ? lot1 : '--';
     document.getElementById('outTp1').innerText = tp1 || '--';
     document.getElementById('outSl1').innerText = sl || '--';
     
-    document.getElementById('outLot2').innerText = (totalLot > 0 && tp2) ? lot2 : '--';
     document.getElementById('outTp2').innerText = tp2 || '--';
     document.getElementById('outSl2').innerText = sl || '--';
     
-    document.getElementById('outLot3').innerText = (totalLot > 0 && tp3) ? lot3 : '--';
     document.getElementById('outTp3').innerText = tp3 || '--';
     document.getElementById('outSl3').innerText = sl || '--';
   }
