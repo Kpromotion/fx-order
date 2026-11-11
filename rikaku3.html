@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>三眼AI 注文アシスト (TP3 3分割版)</title><style>  :root {    --bg-color: #0f172a; /* Dark Navy */    --panel-bg: #1e293b; /* Blue-Grey */    --input-bg: #334155;    --text-main: #f8fafc;    --text-muted: #94a3b8;    --accent-gold: #f59e0b; /* Gold/Orange Accent for TP3 */    --accent-green: #10b981;    --accent-blue: #3b82f6;    --accent-red: #ef4444;    --accent-purple: #8b5cf6;    --border-color: #475569;  }  body {    background-color: var(--bg-color);    color: var(--text-main);    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;    margin: 0;    padding: 16px;    -webkit-font-smoothing: antialiased;    transition: border-top 0.3s;    border-top: 5px solid var(--accent-gold);  }  .container {    max-width: 500px;    margin: 0 auto;  }  .badge-tp3 {    background-color: var(--accent-gold);    color: #fff;    text-align: center;    padding: 8px;    font-weight: bold;    border-radius: 6px;    margin-bottom: 15px;    font-size: 0.95rem;    letter-spacing: 1px;  }  .header-container {    display: flex;    justify-content: space-between;    align-items: center;    margin-bottom: 20px;  }  h1 {    font-size: 1.2rem;    margin: 0;  }  .btn-clear {    background: none;    border: none;    color: var(--accent-blue);    font-size: 0.95rem;    font-weight: bold;    cursor: pointer;    padding: 8px;  }  .btn-clear:active { opacity: 0.7; }  .section-title {    font-size: 0.85rem;    color: var(--text-muted);    margin-bottom: 8px;    font-weight: bold;  }  .panel {    background-color: var(--panel-bg);    border-radius: 12px;    padding: 16px;    margin-bottom: 24px;    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);    border-left: 4px solid var(--accent-gold);  }  .broker-select {    display: flex;    gap: 15px;    margin-bottom: 5px;  }  .broker-select label {    display: flex;    align-items: center;    gap: 5px;    font-size: 0.9rem;    cursor: pointer;  }  textarea {    width: 100%;    background-color: var(--input-bg);    color: var(--text-main);    border: 1px solid var(--border-color);    border-radius: 8px;    padding: 12px;    font-size: 0.9rem;    box-sizing: border-box;    min-height: 100px;    margin-bottom: 12px;    resize: vertical;  }  .btn-extract {    width: 100%;    background-color: var(--accent-purple);    color: white;    border: none;    padding: 14px;    border-radius: 8px;    font-size: 1rem;    font-weight: bold;    cursor: pointer;  }  .btn-extract:active { opacity: 0.8; }  .input-group { margin-bottom: 12px; }  .input-group label {    display: block;    font-size: 0.8rem;    color: var(--text-muted);    margin-bottom: 4px;  }  .input-group input {    width: 100%;    background-color: var(--input-bg);    color: var(--text-main);    border: 1px solid var(--border-color);    border-radius: 8px;    padding: 12px;    font-size: 1.2rem;    font-weight: bold;    box-sizing: border-box;  }  .input-group input.gold-text { color: var(--accent-gold); }  .input-group input.green-text { color: var(--accent-green); }  .input-group input.blue-text { color: var(--accent-blue); }  .input-group input.red-text { color: var(--accent-red); }  .output-row {    display: flex;    justify-content: space-between;    align-items: center;    background-color: var(--input-bg);    border-radius: 8px;    padding: 10px 12px;    margin-bottom: 12px;  }  .output-info {    display: flex;    flex-direction: column;  }  .output-label {    font-size: 0.75rem;    color: var(--text-muted);    margin-bottom: 2px;  }  .output-value {    font-size: 1.3rem;    font-weight: bold;  }  .val-green { color: var(--accent-green); }  .val-blue { color: var(--accent-blue); }  .val-red { color: var(--accent-red); }  .val-gold { color: var(--accent-gold); }  .btn-copy {    padding: 10px 16px;    border-radius: 6px;    border: none;    color: white;    font-weight: bold;    cursor: pointer;    font-size: 0.95rem;    min-width: 90px;  }  .btn-copy.green { background-color: var(--accent-green); }  .btn-copy.blue { background-color: var(--accent-blue); }  .btn-copy.red { background-color: var(--accent-red); }  .btn-copy.gold { background-color: var(--accent-gold); }  .btn-copy:active { opacity: 0.8; }  </style></head><body>
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>三眼AI 注文アシスト (TP3 3分割版)</title><style>  :root {    --bg-color: #0f172a;    --panel-bg: #1e293b;    --input-bg: #334155;    --text-main: #f8fafc;    --text-muted: #94a3b8;    --accent-gold: #f59e0b;    --accent-green: #10b981;    --accent-blue: #3b82f6;    --accent-red: #ef4444;    --accent-purple: #8b5cf6;    --border-color: #475569;  }  body {    background-color: var(--bg-color);    color: var(--text-main);    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;    margin: 0;    padding: 16px;    -webkit-font-smoothing: antialiased;    transition: border-top 0.3s;    border-top: 5px solid var(--accent-gold);  }  .container {    max-width: 500px;    margin: 0 auto;  }  .badge-tp3 {    background-color: var(--accent-gold);    color: #fff;    text-align: center;    padding: 8px;    font-weight: bold;    border-radius: 6px;    margin-bottom: 15px;    font-size: 0.95rem;    letter-spacing: 1px;  }  .header-container {    display: flex;    justify-content: space-between;    align-items: center;    margin-bottom: 20px;  }  h1 {    font-size: 1.2rem;    margin: 0;  }  .btn-clear {    background: none;    border: none;    color: var(--accent-blue);    font-size: 0.95rem;    font-weight: bold;    cursor: pointer;    padding: 8px;  }  .btn-clear:active { opacity: 0.7; }  .section-title {    font-size: 0.85rem;    color: var(--text-muted);    margin-bottom: 8px;    font-weight: bold;  }  .panel {    background-color: var(--panel-bg);    border-radius: 12px;    padding: 16px;    margin-bottom: 24px;    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);    border-left: 4px solid var(--accent-gold);  }  .broker-select {    display: flex;    gap: 15px;    margin-bottom: 5px;  }  .broker-select label {    display: flex;    align-items: center;    gap: 5px;    font-size: 0.9rem;    cursor: pointer;  }  textarea {    width: 100%;    background-color: var(--input-bg);    color: var(--text-main);    border: 1px solid var(--border-color);    border-radius: 8px;    padding: 12px;    font-size: 0.9rem;    box-sizing: border-box;    min-height: 100px;    margin-bottom: 12px;    resize: vertical;  }  .btn-extract {    width: 100%;    background-color: var(--accent-purple);    color: white;    border: none;    padding: 14px;    border-radius: 8px;    font-size: 1rem;    font-weight: bold;    cursor: pointer;  }  .btn-extract:active { opacity: 0.8; }  .input-group { margin-bottom: 12px; }  .input-group label {    display: block;    font-size: 0.8rem;    color: var(--text-muted);    margin-bottom: 4px;  }  .input-group input {    width: 100%;    background-color: var(--input-bg);    color: var(--text-main);    border: 1px solid var(--border-color);    border-radius: 8px;    padding: 12px;    font-size: 1.2rem;    font-weight: bold;    box-sizing: border-box;  }  .input-group input.gold-text { color: var(--accent-gold); }  .input-group input.green-text { color: var(--accent-green); }  .input-group input.blue-text { color: var(--accent-blue); }  .input-group input.red-text { color: var(--accent-red); }  .output-row {    display: flex;    justify-content: space-between;    align-items: center;    background-color: var(--input-bg);    border-radius: 8px;    padding: 10px 12px;    margin-bottom: 12px;  }  .output-info {    display: flex;    flex-direction: column;  }  .output-label {    font-size: 0.75rem;    color: var(--text-muted);    margin-bottom: 2px;  }  .output-value {    font-size: 1.3rem;    font-weight: bold;  }  .val-green { color: var(--accent-green); }  .val-blue { color: var(--accent-blue); }  .val-red { color: var(--accent-red); }  .val-gold { color: var(--accent-gold); }  .btn-copy {    padding: 10px 16px;    border-radius: 6px;    border: none;    color: white;    font-weight: bold;    cursor: pointer;    font-size: 0.95rem;    min-width: 90px;  }  .btn-copy.green { background-color: var(--accent-green); }  .btn-copy.blue { background-color: var(--accent-blue); }  .btn-copy.red { background-color: var(--accent-red); }  .btn-copy.gold { background-color: var(--accent-gold); }  .btn-copy:active { opacity: 0.8; }  .error-text { color: #ef4444 !important; font-size: 0.95rem; font-weight: normal; }  </style></head><body>
 <div class="container">
   <div class="badge-tp3">★ TP3 (6:3:1) 3分割 専用版 ★</div>
   <div class="header-container">    <h1 id="appTitle">注文アシスト (GMO)</h1>    <button class="btn-clear" onclick="clearData()">🗑️ クリア</button>  </div>
@@ -14,7 +14,7 @@
   <div class="section-title">1. 通知テキストを貼り付け</div>
   <div class="panel" style="border-left: 4px solid var(--accent-purple);">    <textarea id="notifyText" placeholder="ここに三眼AIの通知をペーストしてください。"></textarea>    <button class="btn-extract" onclick="extractData()">数値を自動入力する</button>  </div>
 
-  <div class="section-title">2. 入力エリア (三眼AIの数値)</div>  <div class="panel">    <div class="input-group">      <label id="lotLabel">入力単位：<b style="color: var(--accent-gold);">万通貨</b> （例: 6.3）</label>      <input type="number" id="totalLot" class="gold-text" step="0.01"  oninput="calculate()">    </div>    <div class="input-group">      <label>建玉レート</label>      <input type="number" id="entryRate" step="0.001" oninput="calculate()">    </div>    <div class="input-group">      <label>利確目標1</label>      <input type="number" id="tp1" class="blue-text" step="0.001" oninput="calculate()">    </div>    <div class="input-group">      <label>利確目標2</label>      <input type="number" id="tp2" class="blue-text" step="0.001" oninput="calculate()">    </div>    <div class="input-group">      <label>利確目標3</label>      <input type="number" id="tp3" class="blue-text" step="0.001" oninput="calculate()">    </div>    <div class="input-group">      <label>損切りライン</label>      <input type="number" id="sl" class="red-text" step="0.001" oninput="calculate()">    </div>  </div>
+  <div class="section-title">2. 入力エリア (三眼AIの数値)</div>  <div class="panel">    <div class="input-group">      <label id="lotLabel">入力単位：<b style="color: var(--accent-gold);">万通貨</b> （例: 6.3）</label>      <input type="text" inputmode="decimal" id="totalLot" class="gold-text" oninput="calculate()">    </div>    <div class="input-group">      <label>建玉レート</label>      <input type="text" inputmode="decimal" id="entryRate" oninput="calculate()">    </div>    <div class="input-group">      <label>利確目標1</label>      <input type="text" inputmode="decimal" id="tp1" class="blue-text" oninput="calculate()">    </div>    <div class="input-group">      <label>利確目標2</label>      <input type="text" inputmode="decimal" id="tp2" class="blue-text" oninput="calculate()">    </div>    <div class="input-group">      <label>利確目標3</label>      <input type="text" inputmode="decimal" id="tp3" class="blue-text" oninput="calculate()">    </div>    <div class="input-group">      <label>損切りライン</label>      <input type="text" inputmode="decimal" id="sl" class="red-text" oninput="calculate()">    </div>  </div>
 
   <div class="section-title">3. 発注用データ (6割・3割・1割 分割)</div>    
   <div class="panel">    <div class="section-title" style="color: #fff; font-size: 1rem; margin-bottom: 12px;">1回目 OCO注文 (6割)</div>        <div class="output-row">      <div class="output-info">        <span class="output-label">ロット数 (6割)</span>        <span class="output-value val-gold" id="outLot1">--</span>      </div>      <button class="btn-copy gold" onclick="copyVal('outLot1', this)">📋 コピー</button>    </div>    <div class="output-row">      <div class="output-info">        <span class="output-label">指値 (利確1)</span>        <span class="output-value val-blue" id="outTp1">--</span>      </div>      <button class="btn-copy blue" onclick="copyVal('outTp1', this)">📋 コピー</button>    </div>    <div class="output-row">      <div class="output-info">        <span class="output-label">逆指値 (損切)</span>        <span class="output-value val-red" id="outSl1">--</span>      </div>      <button class="btn-copy red" onclick="copyVal('outSl1', this)">📋 コピー</button>    </div>  </div>
@@ -69,12 +69,15 @@
     document.getElementById('tp3').value = '';
     document.getElementById('sl').value = '';
     document.getElementById('outLot1').innerText = '--';
+    document.getElementById('outLot1').className = 'output-value val-gold';
     document.getElementById('outTp1').innerText = '--';
     document.getElementById('outSl1').innerText = '--';
     document.getElementById('outLot2').innerText = '--';
+    document.getElementById('outLot2').className = 'output-value val-gold';
     document.getElementById('outTp2').innerText = '--';
     document.getElementById('outSl2').innerText = '--';
     document.getElementById('outLot3').innerText = '--';
+    document.getElementById('outLot3').className = 'output-value val-gold';
     document.getElementById('outTp3').innerText = '--';
     document.getElementById('outSl3').innerText = '--';
   }
@@ -107,19 +110,54 @@
   }
 
   function calculate() {
-    const broker = document.querySelector('input[name="broker"]:checked').value;
-    const totalLot = parseFloat(document.getElementById('totalLot').value) || 0;
+    // 全角数字や全角ピリオドが入力された場合に半角に変換する
+    let rawLotStr = document.getElementById('totalLot').value || '';
+    rawLotStr = rawLotStr.replace(/[０-９．]/g, function(s) {
+        return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+    });
+    
+    const totalLot = parseFloat(rawLotStr) || 0;
+    localStorage.setItem('savedTotalLot', rawLotStr);
+    
     const tp1 = document.getElementById('tp1').value;
     const tp2 = document.getElementById('tp2').value;
     const tp3 = document.getElementById('tp3').value;
     const sl = document.getElementById('sl').value;
 
-    localStorage.setItem('savedTotalLot', document.getElementById('totalLot').value);
-
     // 小数第2位まで計算 (100倍して四捨五入して100で割る)
     let lot1 = Math.round(totalLot * 0.6 * 100) / 100;
     let lot2 = Math.round(totalLot * 0.3 * 100) / 100;
     let lot3 = Math.round((totalLot - lot1 - lot2) * 100) / 100;
+    
+    // 1回目
+    const outLot1Elem = document.getElementById('outLot1');
+    if (totalLot > 0) {
+        outLot1Elem.innerText = lot1;
+        outLot1Elem.className = 'output-value val-gold';
+    } else {
+        outLot1Elem.innerText = '↑数量を入力';
+        outLot1Elem.className = 'output-value error-text';
+    }
+    
+    // 2回目
+    const outLot2Elem = document.getElementById('outLot2');
+    if (totalLot > 0) {
+        outLot2Elem.innerText = lot2;
+        outLot2Elem.className = 'output-value val-gold';
+    } else {
+        outLot2Elem.innerText = '↑数量を入力';
+        outLot2Elem.className = 'output-value error-text';
+    }
+    
+    // 3回目
+    const outLot3Elem = document.getElementById('outLot3');
+    if (totalLot > 0) {
+        outLot3Elem.innerText = lot3;
+        outLot3Elem.className = 'output-value val-gold';
+    } else {
+        outLot3Elem.innerText = '↑数量を入力';
+        outLot3Elem.className = 'output-value error-text';
+    }
 
     document.getElementById('outTp1').innerText = tp1 || '--';
     document.getElementById('outSl1').innerText = sl || '--';
@@ -133,7 +171,7 @@
 
   function copyVal(elementId, btnElement) {
     const val = document.getElementById(elementId).innerText;
-    if (val === '--' || !val) return;
+    if (val === '--' || val === '↑数量を入力' || !val) return;
     navigator.clipboard.writeText(val).then(() => {
       const originalText = btnElement.innerText;
       btnElement.innerText = "✔ コピー済";
