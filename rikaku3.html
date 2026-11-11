@@ -12,7 +12,6 @@
   <div class="section-title">1. 通知テキストを貼り付け</div>
   <div class="panel">    <textarea id="notifyText" placeholder="ここに三眼AIの通知をペーストしてください。"></textarea>    <button class="btn-extract" onclick="extractData()">数値を自動入力する</button>  </div>
 
-  <div class="section-title">2. 入力エリア (三眼AIの数値)</div>  <div class="panel">    <div class="input-group">      <label id="lotLabel">入力単位：<b style="color: var(--accent-green);">万通貨</b> （例: 6.3）</label>      <input type="number" id="totalLot" class="green-text" step="0.001"  oninput="calculate()">    </div>    <div class="input-group">      <label>建玉レート</label>      <input type="number" id="entryRate" step="0.001" oninput="calculate()">    </div>    <div class="input-group">      <label>利確目標1</label>      <input type="number" id="tp1" class="blue-text" step="0.001" oninput="calculate()">    </div>    <div class="input-group">      <label>利確目標2</label>      <input type="number" id="tp2" class="blue-text" step="0.001" oninput="calculate()">    </div>    <div class="input-group">      <label>利確目標3</label>      <input type="number" id="tp3" class="blue-text" step="0.001" oninput="calculate()">    </div>    <div class="input-group">      <label>損切りライン</label>      <input type="number" id="sl" class="red-text" step="0.001" oninput="calculate()">    </div>  </div>
 
   <div class="section-title">3. 発注用データ (6割・3割・1割 分割)</div>    
   <div class="panel">    <div class="section-title" style="color: #fff; font-size: 1rem; margin-bottom: 12px;">1回目 OCO注文 (6割)</div>        <div class="output-row">      <div class="output-info">        <span class="output-label">ロット数 (6割)</span>        <span class="output-value val-green" id="outLot1">--</span>      </div>      <button class="btn-copy green" onclick="copyVal('outLot1', this)">📋 コピー</button>    </div>    <div class="output-row">      <div class="output-info">        <span class="output-label">指値 (利確1)</span>        <span class="output-value val-blue" id="outTp1">--</span>      </div>      <button class="btn-copy blue" onclick="copyVal('outTp1', this)">📋 コピー</button>    </div>    <div class="output-row">      <div class="output-info">        <span class="output-label">逆指値 (損切)</span>        <span class="output-value val-red" id="outSl1">--</span>      </div>      <button class="btn-copy red" onclick="copyVal('outSl1', this)">📋 コピー</button>    </div>  </div>
@@ -114,10 +113,6 @@
 
     localStorage.setItem('savedTotalLot', document.getElementById('totalLot').value);
 
-    // 小数第3位まで計算 (1000倍して四捨五入して1000で割る)
-    let lot1 = Math.round(totalLot * 0.6 * 1000) / 1000;
-    let lot2 = Math.round(totalLot * 0.3 * 1000) / 1000;
-    let lot3 = Math.round((totalLot - lot1 - lot2) * 1000) / 1000;
 
     document.getElementById('outLot1').innerText = (totalLot > 0 && tp1) ? lot1 : '--';
     document.getElementById('outTp1').innerText = tp1 || '--';
